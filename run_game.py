@@ -1,6 +1,7 @@
 import torch
 import time
 import sys
+import os
 from game.game_env import SnakeEnv
 from ai.agents.dqn_agent import DQNAgent
 from ai.agents.ppo_agent import PPOAgent
@@ -9,10 +10,10 @@ from ai.agents.ppo_agent import PPOAgent
 STATE_SIZE = 11
 ACTION_SIZE = 4
 
-# Modelos disponíveis
+# Modelos disponíveis (final_model, checkpoint, AgentClass)
 MODELS = {
-    'dqn': ('checkpoints/dqn/final_model.pth', DQNAgent),
-    'ppo': ('checkpoints/ppo/final_model.pth', PPOAgent),
+    'dqn': ('checkpoints/dqn/final_model.pth', 'checkpoints/dqn/checkpoint.pth', DQNAgent),
+    'ppo': ('checkpoints/ppo/final_model.pth', 'checkpoints/ppo/checkpoint.pth', PPOAgent),
 }
 
 def load_trained_agent(agent_type='ppo'):
@@ -20,13 +21,20 @@ def load_trained_agent(agent_type='ppo'):
         print(f"Agente '{agent_type}' não encontrado. Opções: {list(MODELS.keys())}")
         sys.exit(1)
 
-    model_path, AgentClass = MODELS[agent_type]
+    final_path, checkpoint_path, AgentClass = MODELS[agent_type]
     agent = AgentClass(state_size=STATE_SIZE, action_size=ACTION_SIZE)
 
-    try:
-        agent.model.load_state_dict(torch.load(model_path, map_location='cpu'))
-    except FileNotFoundError:
-        print(f"Modelo não encontrado em '{model_path}'. Treine primeiro com:")
+    # Tenta carregar final_model primeiro, depois checkpoint
+    if os.path.isfile(final_path):
+        agent.model.load_state_dict(torch.load(final_path, map_location='cpu'))
+        print(f"Modelo final {agent_type.upper()} carregado!")
+    elif os.path.isfile(checkpoint_path):
+        checkpoint = torch.load(checkpoint_path, map_location='cpu')
+        agent.model.load_state_dict(checkpoint['model_state_dict'])
+        episode = checkpoint.get('episode', '?')
+        print(f"Checkpoint {agent_type.upper()} carregado (episódio {episode})")
+    else:
+        print(f"Nenhum modelo encontrado para '{agent_type}'. Treine primeiro com:")
         print(f"  python training/train_{agent_type}.py")
         sys.exit(1)
 
@@ -34,7 +42,6 @@ def load_trained_agent(agent_type='ppo'):
     if hasattr(agent, 'epsilon'):
         agent.epsilon = 0
 
-    print(f"Modelo {agent_type.upper()} carregado com sucesso!")
     return agent
 
 def run_game_with_agent(agent, env):
