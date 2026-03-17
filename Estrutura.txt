@@ -1,0 +1,55 @@
+snake_rl_game/
+├── game/
+│   ├── snake.py                # Lógica do jogo Snake
+│   ├── game_env.py             # Interface do ambiente de RL (Gym Environment)
+│   └── config.py               # Configurações do jogo (tamanho da tela, velocidade, etc.)
+├── ai/
+│   ├── agents/
+│   │   ├── dqn_agent.py        # Implementação de um agente DQN
+│   │   ├── a2c_agent.py        # Implementação de um agente A2C
+│   │   ├── ppo_agent.py        # Implementação de um agente PPO
+│   │   └── base_agent.py       # Classe base para os agentes (pode conter métodos comuns)
+│   ├── models/
+│   │   ├── dqn_model.py        # Arquitetura da rede neural para DQN
+│   │   ├── a2c_model.py        # Arquitetura da rede neural para A2C
+│   │   └── ppo_model.py        # Arquitetura da rede neural para PPO
+│   └── memory/
+│       └── replay_memory.py    # Implementação do replay memory (experiência para DQN)
+├── training/
+│   ├── train_dqn.py            # Script de treinamento para o agente DQN
+│   ├── train_a2c.py            # Script de treinamento para o agente A2C
+│   ├── train_ppo.py            # Script de treinamento para o agente PPO
+│   ├── evaluation.py           # Script para avaliação do agente treinado
+│   ├── evaluate_agents.py      # <--- Adicionar este script de avaliação aqui
+│   └── utils.py                # Funções auxiliares para o treinamento e avaliação
+├── tests/
+│   ├── test_game_env.py        # Testes para o ambiente de jogo
+│   ├── test_agents.py          # Testes para os agentes (DQN, A2C, PPO)
+│   └── test_models.py          # Testes para os modelos neurais
+├── assets/
+│   ├── images/
+│   │   ├── snake_body.png      # Sprite para o corpo da cobra
+│   │   ├── snake_head.png      # Sprite para a cabeça da cobra
+│   │   └── food.png            # Sprite para a comida
+│   └── sounds/
+│       ├── eat.wav             # Som ao comer
+│       └── game_over.wav       # Som de fim de jogo
+├── notebooks/
+│   ├── exploration_analysis.ipynb    # Análise de exploração e comportamento do agente
+│   └── reward_analysis.ipynb         # Análise da recompensa e aprendizado
+│   └── hyperparameter_tuning.ipynb      # <--- Notebook de ajuste de hiperparâmetros
+├── logs/
+│   ├── training_dqn.log         # Log do treinamento do agente DQN
+│   ├── training_a2c.log         # Log do treinamento do agente A2C
+│   └── training_ppo.log         # Log do treinamento do agente PPO
+├── checkpoints/
+│   ├── dqn/
+│   │   └── checkpoint_epoch_x.pth    # Checkpoints do modelo DQN
+│   ├── a2c/
+│   │   └── checkpoint_epoch_x.pth    # Checkpoints do modelo A2C
+│   └── ppo/
+│       └── checkpoint_epoch_x.pth    # Checkpoints do modelo PPO
+├── requirements.txt            # Dependências do projeto
+├── setup.py                    # Script de instalação do projeto como pacote
+├── README.md                   # Documentação do projeto
+└── run_game.py                 # Script principal para rodar o jogo com o agente treinado
