@@ -1,0 +1,41 @@
+{
+  "hooks": {
+    "post-tool-use": [
+      {
+        "event": "Edit",
+        "script": ".claude/hooks/post-tool-use.sh",
+        "description": "Run pytest after Python file edits"
+      }
+    ],
+    "pre-tool-use": [
+      {
+        "event": "Bash",
+        "script": ".claude/hooks/pre-tool-use.sh",
+        "description": "Block dangerous commands"
+      }
+    ]
+  },
+  "permissions": {
+    "allow": [
+      "python",
+      "python3",
+      "pytest",
+      "pip",
+      "pip3",
+      "git status",
+      "git diff",
+      "git log",
+      "git add",
+      "git commit",
+      "git branch",
+      "git fetch",
+      "tensorboard"
+    ],
+    "deny": [
+      "rm -rf /",
+      "rm -rf ~",
+      "rm -rf .",
+      "git push --force origin main"
+    ]
+  }
+}

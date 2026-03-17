@@ -10,17 +10,20 @@ class TestGameEnv(unittest.TestCase):
         self.game = SnakeGame()
 
     def test_reset_environment(self):
-        state = self.env.reset()
+        state, info = self.env.reset()
         self.assertEqual(len(state), 7)  # Verifica se o estado inicial tem o tamanho correto
         self.assertIsInstance(state, np.ndarray)
+        self.assertIsInstance(info, dict)
 
     def test_step_environment(self):
         self.env.reset()
         action = 0  # Suponha que a ação seja 'CIMA'
-        state, reward, done, _ = self.env.step(action)
+        state, reward, terminated, truncated, info = self.env.step(action)
         self.assertEqual(len(state), 7)
         self.assertIsInstance(reward, (int, float))
-        self.assertIsInstance(done, bool)
+        self.assertIsInstance(terminated, bool)
+        self.assertIsInstance(truncated, bool)
+        self.assertIsInstance(info, dict)
 
     def test_game_initialization(self):
         # Verifica se o jogo é inicializado corretamente com a posição inicial da cobra e comida

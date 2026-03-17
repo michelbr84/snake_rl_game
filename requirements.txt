@@ -1,4 +1,4 @@
-gym
+gymnasium
 torch          # Ou tensorflow, conforme preferência de framework
 numpy
 opencv-python  # Para renderizar o jogo Snake, caso necessário

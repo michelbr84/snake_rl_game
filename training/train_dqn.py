@@ -57,13 +57,14 @@ def train_dqn():
     start_episode, agent.epsilon = load_checkpoint(agent)
 
     for episode in range(start_episode, EPISODES + 1):
-        state = env.reset()
+        state, _ = env.reset()
         total_reward = 0
         done = False
 
         while not done:
             action = agent.act(state)
-            next_state, reward, done, _ = env.step(action)
+            next_state, reward, terminated, truncated, _ = env.step(action)
+            done = terminated or truncated
             agent.remember(state, action, reward, next_state, done)
             agent.replay()
 

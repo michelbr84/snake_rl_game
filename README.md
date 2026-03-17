@@ -52,7 +52,7 @@ snake_rl_game/
 
 1. Clone este repositório:
    ```bash
-   git clone https://github.com/seu-usuario/snake_rl_game.git
+   git clone https://github.com/michelbr84/snake_rl_game.git
    cd snake_rl_game
    ```
 

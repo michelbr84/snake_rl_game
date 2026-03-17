@@ -27,14 +27,15 @@ def train_a2c():
         writer.writerow(["Episode", "Reward"])
 
     for episode in range(EPISODES):
-        state = env.reset()
+        state, _ = env.reset()
         total_reward = 0
         done = False
         log_probs, values, rewards = [], [], []
 
         while not done:
             action = agent.act(state)
-            next_state, reward, done, _ = env.step(action)
+            next_state, reward, terminated, truncated, _ = env.step(action)
+            done = terminated or truncated
             policy, value = agent.model(torch.FloatTensor(state).unsqueeze(0))
             log_prob = torch.log(policy.squeeze(0)[action])
 

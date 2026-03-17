@@ -14,14 +14,15 @@ def evaluate_agent(agent, env, episodes=100):
     steps = []
 
     for episode in range(episodes):
-        state = env.reset()
+        state, _ = env.reset()
         episode_reward = 0
         done = False
         step_count = 0
 
         while not done:
             action = agent.act(state)  # Executa a ação no estado atual
-            next_state, reward, done, _ = env.step(action)
+            next_state, reward, terminated, truncated, _ = env.step(action)
+            done = terminated or truncated
             episode_reward += reward
             state = next_state
             step_count += 1

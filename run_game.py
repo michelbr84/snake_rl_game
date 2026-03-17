@@ -14,14 +14,15 @@ def load_trained_agent(state_size, action_size, model_path):
     return agent
 
 def run_game_with_agent(agent, env):
-    state = env.reset()
+    state, _ = env.reset()
     total_reward = 0
     done = False
 
     while not done:
         env.render()  # Renderiza o jogo para visualização
         action = agent.act(state)  # Ação baseada no estado atual
-        next_state, reward, done, _ = env.step(action)
+        next_state, reward, terminated, truncated, _ = env.step(action)
+        done = terminated or truncated
         total_reward += reward
         state = next_state
 

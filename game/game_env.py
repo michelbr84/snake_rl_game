@@ -1,6 +1,6 @@
 import pygame
-import gym
-from gym import spaces
+import gymnasium as gym
+from gymnasium import spaces
 import numpy as np
 from .snake import SnakeGame
 from .config import SCREEN_WIDTH, SCREEN_HEIGHT, REWARD_FOOD, PENALTY_DEATH, STEP_REWARD
@@ -23,10 +23,11 @@ class SnakeEnv(gym.Env):
             dtype=np.int32
         )
 
-    def reset(self):
-        # Reinicia o jogo e retorna o estado inicial
+    def reset(self, seed=None, options=None):
+        # Reinicia o jogo e retorna o estado inicial e info
+        super().reset(seed=seed, options=options)
         self.game.reset_game()
-        return self._get_state()
+        return self._get_state(), {}
 
     def step(self, action):
         # Mapeia o índice de ação para uma direção do jogo
@@ -42,10 +43,11 @@ class SnakeEnv(gym.Env):
         # Obtém o novo estado
         state = self._get_state()
         
-        # Define a flag `done`
-        done = game_over
+        # Define as flags `terminated` e `truncated`
+        terminated = game_over
+        truncated = False
 
-        return state, reward, done, {}
+        return state, reward, terminated, truncated, {}
 
     def _get_state(self):
         # Estado definido pela posição da cabeça, posição da comida, e comprimento da cobra
