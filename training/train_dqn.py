@@ -7,7 +7,7 @@ from game.game_env import SnakeEnv
 
 # Configurações do treinamento
 EPISODES = 10000
-STATE_SIZE = 7
+STATE_SIZE = 11
 ACTION_SIZE = 4
 LOG_FILE = "dqn_training_data.csv"
 CHECKPOINT_DIR = "checkpoints/dqn/"

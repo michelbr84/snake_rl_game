@@ -42,6 +42,7 @@ desktop.ini
 logs/
 *.log
 tensorboard_runs/
+*_training_data.csv
 
 # pytest
 .pytest_cache/

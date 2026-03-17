@@ -11,7 +11,7 @@ class TestGameEnv(unittest.TestCase):
 
     def test_reset_environment(self):
         state, info = self.env.reset()
-        self.assertEqual(len(state), 7)  # Verifica se o estado inicial tem o tamanho correto
+        self.assertEqual(len(state), 11)  # Verifica se o estado inicial tem o tamanho correto
         self.assertIsInstance(state, np.ndarray)
         self.assertIsInstance(info, dict)
 
@@ -19,7 +19,7 @@ class TestGameEnv(unittest.TestCase):
         self.env.reset()
         action = 0  # Suponha que a ação seja 'CIMA'
         state, reward, terminated, truncated, info = self.env.step(action)
-        self.assertEqual(len(state), 7)
+        self.assertEqual(len(state), 11)
         self.assertIsInstance(reward, (int, float))
         self.assertIsInstance(terminated, bool)
         self.assertIsInstance(truncated, bool)

@@ -6,7 +6,7 @@ from game.game_env import SnakeEnv
 
 # Configurações do treinamento
 EPISODES = 1000
-STATE_SIZE = 7
+STATE_SIZE = 11
 ACTION_SIZE = 4
 LOG_FILE = "a2c_training_data.csv"
 

@@ -4,7 +4,7 @@ from ai.agents.dqn_agent import DQNAgent
 from ai.agents.a2c_agent import A2CAgent
 from ai.agents.ppo_agent import PPOAgent
 
-STATE_SIZE = 7
+STATE_SIZE = 11
 ACTION_SIZE = 4
 
 class TestDQNAgent(unittest.TestCase):

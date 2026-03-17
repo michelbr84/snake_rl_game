@@ -9,28 +9,27 @@ Este projeto é uma implementação do clássico jogo Snake com agentes de Apren
 snake_rl_game/
 ├── game/                  # Contém a lógica do jogo e a interface do ambiente RL
 │   ├── snake.py           # Implementação do jogo Snake
-│   ├── game_env.py        # Ambiente do Gym para integração com RL
+│   ├── game_env.py        # Ambiente Gymnasium para integração com RL
 │   └── config.py          # Configurações de parâmetros do jogo
 ├── ai/                    # Implementações dos agentes e modelos RL
 │   ├── agents/            # Agentes para DQN, A2C e PPO
 │   │   ├── dqn_agent.py   # Agente DQN
 │   │   ├── a2c_agent.py   # Agente A2C
-│   │   ├── ppo_agent.py   # Agente PPO
-│   │   └── base_agent.py  # Classe base com métodos comuns
+│   │   └── ppo_agent.py   # Agente PPO (com suporte GPU/CUDA)
 │   ├── models/            # Modelos de redes neurais dos agentes
-│   ├── memory/            # Memória de replay para experiência do DQN
+│   └── memory/            # Memória de replay para experiência do DQN
 │       └── replay_memory.py
 ├── training/              # Scripts de treinamento e avaliação
 │   ├── train_dqn.py       # Script para treinar o agente DQN
 │   ├── train_a2c.py       # Script para treinar o agente A2C
 │   ├── train_ppo.py       # Script para treinar o agente PPO
-│   ├── evaluation.py      # Script para avaliar o agente treinado
-│   └── utils.py           # Funções auxiliares para treinamento e avaliação
+│   ├── run_ppo_gpu.py     # Script para treinar PPO headless com GPU
+│   └── evaluate_agents.py # Script para avaliar agentes treinados
 ├── tests/                 # Testes para o ambiente, agentes e modelos
 ├── assets/                # Sprites e sons para o jogo
 ├── notebooks/             # Análises e visualização de dados de treinamento
-├── logs/                  # Armazenamento dos logs de treinamento
 ├── checkpoints/           # Checkpoints e salvamento de modelos treinados
+├── CLAUDE.md              # Instruções para Claude Code
 ├── requirements.txt       # Dependências do projeto
 ├── setup.py               # Script de instalação do projeto
 ├── README.md              # Documentação do projeto
@@ -41,11 +40,12 @@ snake_rl_game/
 
 ### Pré-requisitos
 
-- **Python 3.8+**
+- **Python 3.10+**
+- **GPU com CUDA** (opcional, mas recomendado para treinamento)
 - **Bibliotecas**:
   - `Pygame`
-  - `Gym`
-  - `Torch`
+  - `Gymnasium` (substitui o antigo `gym`)
+  - `Torch` (com CUDA para GPU)
   - Outras dependências listadas no arquivo `requirements.txt`
 
 ### Instalação
@@ -58,9 +58,9 @@ snake_rl_game/
 
 2. Crie um ambiente virtual:
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # Para Linux/Mac
-   venv\Scripts\activate     # Para Windows
+   python -m venv .venv
+   source .venv/bin/activate       # Para Linux/Mac
+   .venv\Scripts\activate          # Para Windows
    ```
 
 3. Instale as dependências:
@@ -68,98 +68,102 @@ snake_rl_game/
    pip install -r requirements.txt
    ```
 
+4. (Opcional) Para suporte GPU, instale o PyTorch com CUDA:
+   ```bash
+   pip install torch --index-url https://download.pytorch.org/whl/cu128
+   ```
+
 ### Configuração
 
 - **Arquivo de Configuração (`game/config.py`)**: Parâmetros como tamanho da tela, velocidade da cobra, e recompensas podem ser ajustados no arquivo `config.py` para facilitar experimentos.
 - **Variáveis de Hiperparâmetros**: Cada agente possui hiperparâmetros específicos (taxa de aprendizado, gama, epsilon, etc.), definidos nos scripts de treinamento em `training/`.
+
+### Estado do Ambiente (11 features)
+
+O ambiente utiliza um estado inteligente com 11 features binárias/normalizadas:
+
+| Feature | Descrição |
+|---|---|
+| `danger_straight` | Perigo em frente (parede ou corpo) |
+| `danger_left` | Perigo à esquerda |
+| `danger_right` | Perigo à direita |
+| `dir_up/down/left/right` | Direção atual da cobra (one-hot) |
+| `food_up/down/left/right` | Direção relativa da comida |
 
 ### Executando o Jogo
 
 Para rodar o jogo com o agente treinado:
 
 ```bash
-python run_game.py
+python run_game.py          # Usa PPO por padrão
+python run_game.py ppo      # Especifica PPO
+python run_game.py dqn      # Especifica DQN
 ```
-
-Este comando executa o jogo Snake, onde o agente RL irá interagir com o ambiente em tempo real.
 
 ---
 
 ### Treinamento dos Agentes
 
-Os scripts de treinamento para cada agente estão na pasta `training/`. Ao rodar um script, ele treina o agente correspondente, salva checkpoints e gera logs do progresso. 
+Os scripts de treinamento para cada agente estão na pasta `training/`. Ao rodar um script, ele treina o agente correspondente, salva checkpoints e gera logs do progresso.
 
 #### DQN
-Para treinar o agente **DQN**:
 ```bash
 python training/train_dqn.py
 ```
 
 #### A2C
-Para treinar o agente **A2C**:
 ```bash
 python training/train_a2c.py
 ```
 
 #### PPO
-Para treinar o agente **PPO**:
 ```bash
 python training/train_ppo.py
 ```
 
-> Cada um desses scripts salva checkpoints a cada 100 episódios e registra métricas de desempenho em arquivos `.log` e `.csv`.
+#### PPO com GPU (headless, recomendado)
+```bash
+python training/run_ppo_gpu.py
+```
+
+> Cada script salva checkpoints a cada 100 episódios e o modelo final em `checkpoints/<agente>/final_model.pth`. Os dados de treinamento são registrados em arquivos `.csv`.
 
 ---
 
 ### Avaliação dos Agentes
 
-Após o treinamento, os agentes podem ser avaliados usando o script `evaluation.py`:
+Após o treinamento, os agentes podem ser avaliados:
 
 ```bash
-python training/evaluation.py
+python training/evaluate_agents.py
 ```
-
-Este script carrega o modelo treinado e executa uma série de jogos para medir a performance, registrando métricas de desempenho.
-
-### Notebooks de Análise
-
-Na pasta `notebooks/`, há notebooks (`exploration_analysis.ipynb` e `reward_analysis.ipynb`) para explorar as recompensas e o comportamento do agente durante o treinamento. Eles permitem visualizar o equilíbrio entre exploração e exploração e o impacto das recompensas no aprendizado.
-
----
 
 ### Testes
 
-A pasta `tests/` contém testes unitários para garantir a integridade do código:
-
-- **test_game_env.py**: Testes para o ambiente do jogo.
-- **test_agents.py**: Testes para os agentes (DQN, A2C, PPO).
-- **test_models.py**: Testes para verificar a integridade das redes neurais.
-
-Execute os testes com:
 ```bash
-python -m unittest discover -s tests
+python -m pytest tests/ -v
 ```
 
 ---
 
 ### Componentes do Projeto
 
-1. **game/snake.py**: Contém a lógica do jogo, incluindo detecção de colisão, movimento da cobra, e geração de comida.
-2. **game/game_env.py**: Interface do ambiente Gym, definindo o espaço de ação, recompensas, e estados para integração com os agentes.
-3. **ai/agents/**: Implementações dos agentes (DQN, A2C, PPO), com métodos para treinamento e seleção de ações.
-4. **ai/models/**: Modelos de redes neurais específicas para cada agente.
-5. **training/**: Scripts para treinamento e avaliação dos agentes, com checkpoints e registros de dados.
-6. **tests/**: Testes unitários e de integração para o jogo, agentes e redes neurais.
-7. **assets/**: Contém sprites e sons para o jogo, melhorando a experiência visual e sonora.
-8. **checkpoints/**: Salva os checkpoints dos modelos treinados para retomar o treinamento.
+1. **game/snake.py**: Lógica do jogo, colisão, movimento da cobra, e geração de comida.
+2. **game/game_env.py**: Interface Gymnasium com estado inteligente (11 features) e reward shaping.
+3. **ai/agents/**: Implementações dos agentes (DQN, A2C, PPO com suporte GPU).
+4. **ai/models/**: Redes neurais específicas para cada agente.
+5. **training/**: Scripts de treinamento com checkpoints, resume, e logs CSV.
+6. **tests/**: Testes unitários (pytest) para o jogo, agentes e modelos.
+7. **assets/**: Sprites e sons para o jogo.
+8. **checkpoints/**: Modelos treinados salvos.
 
 ---
 
 ### Melhorias Futuras
 
-- **Aprimoramento de Hiperparâmetros**: Ajuste fino de hiperparâmetros para melhorar o desempenho dos agentes.
-- **Implementação de Modelos Avançados**: Experimentação com outros algoritmos de RL como DDPG e SAC.
-- **Visualizações Mais Detalhadas**: Adição de gráficos de métricas como perda de aprendizado e taxas de sucesso.
+- **Aprimoramento de Hiperparâmetros**: Ajuste fino para melhorar o desempenho dos agentes.
+- **Implementação de Modelos Avançados**: Experimentação com DDPG e SAC.
+- **Visualizações Mais Detalhadas**: Gráficos de métricas como perda e taxas de sucesso.
 
 ---
 

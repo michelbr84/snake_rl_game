@@ -4,7 +4,7 @@ from ai.models.dqn_model import DQNModel
 from ai.models.a2c_model import ActorCriticModel
 from ai.models.ppo_model import PPOActorCriticModel
 
-STATE_SIZE = 7
+STATE_SIZE = 11
 ACTION_SIZE = 4
 
 class TestDQNModel(unittest.TestCase):

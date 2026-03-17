@@ -44,14 +44,14 @@ if __name__ == "__main__":
 
     # Carrega o agente de acordo com o tipo escolhido
     if AGENT_TYPE == 'DQN':
-        agent = DQNAgent(state_size=7, action_size=4)
-        agent.model.load_state_dict(torch.load('checkpoints/dqn/trained_model.pth'))
+        agent = DQNAgent(state_size=11, action_size=4)
+        agent.model.load_state_dict(torch.load('checkpoints/dqn/final_model.pth'))
     elif AGENT_TYPE == 'A2C':
-        agent = A2CAgent(state_size=7, action_size=4)
-        agent.model.load_state_dict(torch.load('checkpoints/a2c/trained_model.pth'))
+        agent = A2CAgent(state_size=11, action_size=4)
+        agent.model.load_state_dict(torch.load('checkpoints/a2c/final_model.pth'))
     elif AGENT_TYPE == 'PPO':
-        agent = PPOAgent(state_size=7, action_size=4)
-        agent.model.load_state_dict(torch.load('checkpoints/ppo/trained_model.pth'))
+        agent = PPOAgent(state_size=11, action_size=4)
+        agent.model.load_state_dict(torch.load('checkpoints/ppo/final_model.pth'))
     
     # Avalia o agente
     evaluate_agent(agent, env, episodes=EPISODES)
